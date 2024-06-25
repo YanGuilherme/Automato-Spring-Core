@@ -6,13 +6,11 @@ import br.com.yan.automato.repository.CarroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class CarroController {
@@ -39,6 +37,30 @@ public class CarroController {
         CarroDto carroDto = carrosDto.get(0); // Supondo que sempre haverá apenas um carro no array
         Carro carroPersisto = carroRepository.save(carroDto.toModel());
         return new ResponseEntity<>(new CarroDto(carroPersisto), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<CarroDto> update(@PathVariable Long id, @RequestBody CarroDto carroDtoRequest ){
+        //verificar se o ID do carro a ser atualizado foi fornecido
+        if(id == null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        //verificando se o carro fornecido existe no bd
+        Optional<Carro> optionalCarro = carroRepository.findById(id);
+        if(optionalCarro.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        //atualizar o carro existente com os novos dados
+        Carro carroExistente = optionalCarro.get();
+        carroExistente.setModelo(carroDtoRequest.getModelo());
+        carroExistente.setPreco(carroDtoRequest.getPreco());
+
+        //salvando o carro atualizado no bd
+        Carro carroAtualizado = carroRepository.save(carroExistente);
+
+        return new ResponseEntity<>(new CarroDto(carroAtualizado), HttpStatus.OK);
     }
 
 }

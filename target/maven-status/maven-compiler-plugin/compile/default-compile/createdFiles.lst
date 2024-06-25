@@ -1,0 +1,7 @@
+br/com/yan/automato/controller/CarroController.class
+br/com/yan/automato/model/Carro.class
+br/com/yan/automato/repository/CarroRepository.class
+br/com/yan/automato/GeradorDeAutomatoApplication.class
+br/com/yan/automato/config/MyConfiguration$1.class
+br/com/yan/automato/dto/CarroDto.class
+br/com/yan/automato/config/MyConfiguration.class

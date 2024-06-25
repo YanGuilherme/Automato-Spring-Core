@@ -54,13 +54,28 @@ public class CarroController {
 
         //atualizar o carro existente com os novos dados
         Carro carroExistente = optionalCarro.get();
-        carroExistente.setModelo(carroDtoRequest.getModelo());
-        carroExistente.setPreco(carroDtoRequest.getPreco());
+
+        if(carroDtoRequest.getModelo() != null){
+            carroExistente.setModelo(carroDtoRequest.getModelo());
+        }
+        if(carroDtoRequest.getPreco() != null){
+            carroExistente.setPreco(carroDtoRequest.getPreco());
+        }
 
         //salvando o carro atualizado no bd
         Carro carroAtualizado = carroRepository.save(carroExistente);
 
         return new ResponseEntity<>(new CarroDto(carroAtualizado), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        Optional<Carro> optionalCarro = carroRepository.findById(id);
+        if(optionalCarro.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        carroRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

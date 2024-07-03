@@ -29,5 +29,12 @@ public class AutomatoController {
         return ResponseEntity.ok(novoAutomato);
     }
 
+    @GetMapping("/findAll")
+    public ResponseEntity<List<Automato>> buscarTodosAutomatos(){
+        List<Automato> automatos = automatoService.buscarTodosAutomatos();
+        return ResponseEntity.ok(automatos);
+    }
+
+
 
 }

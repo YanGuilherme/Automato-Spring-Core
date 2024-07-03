@@ -1,26 +1,47 @@
 package br.com.yan.automato.model;
 import br.com.yan.automato.util.Pair;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Set;
 import java.util.Map;
 
+@Entity
+@Table(name = "automatos")
 public class Automato {
+
+    @ElementCollection
+    @CollectionTable(name = "automato_estados", joinColumns = @JoinColumn(name = "automato_id"))
+    @Column(name = "estado")
     private Set<String> estados;
+
+    @ElementCollection
+    @CollectionTable(name = "automato_alfabeto", joinColumns = @JoinColumn(name = "automato_id"))
+    @Column(name = "simbolo")
     private Set<Character> alfabeto;
-    private Map<Pair<String,Character>, String> transicoes;
+
+    @ElementCollection
+    @CollectionTable(name = "automato_transicoes", joinColumns = @JoinColumn(name = "automato_id"))
+    @MapKeyClass(Pair.class)
+    @MapKeyColumn(name = "estado_simbolo")
+    @Column(name = "estado_destino")
+    private Map<Pair<String,Character>, Set<String>> transicoes;
+
+    @Column(name = "estado_inicial")
     private String estado_inicial;
+
+    @ElementCollection
+    @CollectionTable(name = "automato_estados_aceitacao", joinColumns = @JoinColumn(name = "automato_id"))
+    @Column(name = "estado_aceitacao")
     private Set<String> estados_aceitacao;
 
+    @Column(name = "tipo_automato")
     private String tipo_automato;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public Automato(Set<String> estados, Set<Character> alfabeto, Map<Pair<String, Character>, String> transicoes, String estado_inicial, Set<String> estados_aceitacao, String tipo_automato) {
+    public Automato(Set<String> estados, Set<Character> alfabeto, Map<Pair<String, Character>, Set<String>> transicoes, String estado_inicial, Set<String> estados_aceitacao, String tipo_automato) {
         this.estados = estados;
         this.alfabeto = alfabeto;
         this.transicoes = transicoes;
@@ -48,11 +69,11 @@ public class Automato {
         this.alfabeto = alfabeto;
     }
 
-    public Map<Pair<String, Character>, String> getTransicoes() {
+    public Map<Pair<String, Character>, Set<String>> getTransicoes() {
         return transicoes;
     }
 
-    public void setTransicoes(Map<Pair<String, Character>, String> transicoes) {
+    public void setTransicoes(Map<Pair<String, Character>, Set<String>> transicoes) {
         this.transicoes = transicoes;
     }
 

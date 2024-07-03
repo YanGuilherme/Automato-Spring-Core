@@ -1,8 +1,9 @@
 package br.com.yan.automato.util;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Pair<F, S>{
+public class Pair<F, S> implements Serializable {
     private final F first;
     private final S second;
 

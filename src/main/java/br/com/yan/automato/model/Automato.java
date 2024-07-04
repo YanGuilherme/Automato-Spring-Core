@@ -13,30 +13,24 @@ public class Automato {
     @CollectionTable(name = "automato_estados", joinColumns = @JoinColumn(name = "automato_id"))
     @Column(name = "estado")
     private Set<String> estados;
-
     @ElementCollection
     @CollectionTable(name = "automato_alfabeto", joinColumns = @JoinColumn(name = "automato_id"))
     @Column(name = "simbolo")
     private Set<Character> alfabeto;
-
     @ElementCollection
     @CollectionTable(name = "automato_transicoes", joinColumns = @JoinColumn(name = "automato_id"))
     @MapKeyClass(Pair.class)
     @MapKeyColumn(name = "estado_simbolo")
     @Column(name = "estado_destino")
     private Map<Pair<String,Character>, Set<String>> transicoes;
-
     @Column(name = "estado_inicial")
     private String estado_inicial;
-
     @ElementCollection
     @CollectionTable(name = "automato_estados_aceitacao", joinColumns = @JoinColumn(name = "automato_id"))
     @Column(name = "estado_aceitacao")
     private Set<String> estados_aceitacao;
-
     @Column(name = "tipo_automato")
     private String tipo_automato;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

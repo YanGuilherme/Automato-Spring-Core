@@ -14,8 +14,8 @@ public class AutomatoDto {
     private Map<String, Set<String >> transicoes;
     private String estado_inicial;
     private Set<String> estados_aceitacao;
-
-    private String tipo_automato;
+    private Long id;
+    private Tipo tipo_automato;
 
     public AutomatoDto() {
         //construtor padrasso
@@ -43,6 +43,7 @@ public class AutomatoDto {
         }
         this.estado_inicial = automato.getEstado_inicial();
         this.estados_aceitacao = automato.getEstados_aceitacao();
+        this.id = automato.getId();
         this.tipo_automato = automato.getTipo_automato();
     }
 
@@ -86,12 +87,19 @@ public class AutomatoDto {
         this.estados_aceitacao = estados_aceitacao;
     }
 
-    public String getTipo_automato() {
+    public Tipo getTipo_automato() {
         return tipo_automato;
     }
 
-    public void setTipo_automato(String tipo_automato) {
+    public void setTipo_automato(Tipo tipo_automato) {
         this.tipo_automato = tipo_automato;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

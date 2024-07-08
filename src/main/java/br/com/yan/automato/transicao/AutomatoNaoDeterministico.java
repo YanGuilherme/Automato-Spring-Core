@@ -4,6 +4,8 @@ import java.util.*;
 
 public class AutomatoNaoDeterministico extends Automato {
 
+    private final String CADEIA_VAZIA = "&";
+
     private Map<String, Map<Character, Set<String>>> transicoes;
 
     public AutomatoNaoDeterministico() {
@@ -43,6 +45,7 @@ public class AutomatoNaoDeterministico extends Automato {
 
         final Character simbolo = cadeia.charAt(index);
         final Set<String> proximosEstados = transicoes.get(estadoAtual).get(simbolo);
+        proximosEstados.addAll(transicoes.get(estadoAtual).get(CADEIA_VAZIA));
 
         if (proximosEstados.isEmpty()) {
             return false; // Não há transição para o símbolo atual

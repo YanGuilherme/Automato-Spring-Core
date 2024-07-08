@@ -11,40 +11,39 @@ import java.util.Set;
 public class AutomatoDto {
     private Set<String> estados;
     private Set<Character> alfabeto;
-    private Map<String, Set<String >> transicoes;
-    private String estado_inicial;
-    private Set<String> estados_aceitacao;
-    private Long id;
+    private Map<String, Map<Character, Set<String>>> transicoes;
+    private String estadoInicial;
+    private Set<String> estadosAceitacao;
     private Tipo tipo_automato;
 
-    public AutomatoDto() {
+    public AutomatoDto(String estadoInicial, Set<String> estadosAceitacao) {
         //construtor padrasso
+        this.estadoInicial = estadoInicial;
+        this.estadosAceitacao = estadosAceitacao;
     }
 
-    public AutomatoDto(Automato automato){
+    public AutomatoDto(Automato automato, String estadoInicial, Set<String> estadosAceitacao){
         this.estados = automato.getEstados();
         this.alfabeto = automato.getAlfabeto();
-        this.transicoes = new HashMap<>();
-
-        for (Map.Entry<Pair<String, Character>, Set<String>> entry : automato.getTransicoes().entrySet()) {
-            String estadoOrigem = entry.getKey().getFirst();
-            Character simbolo = entry.getKey().getSecond();
-            Set<String> estadosDestino = entry.getValue();
-
-            // Verifica se já existe uma entrada para o estado de origem
-            if (!this.transicoes.containsKey(estadoOrigem)) {
-                this.transicoes.put(estadoOrigem, new HashSet<>());
-            }
-
-            // Adiciona o estado de destino à lista de estados para o estado de origem e símbolo
-            for(String estadoDestino : estadosDestino){
-                this.transicoes.get(estadoOrigem).add(estadoDestino);
-            }
-        }
-        this.estado_inicial = automato.getEstado_inicial();
-        this.estados_aceitacao = automato.getEstados_aceitacao();
-        this.id = automato.getId();
+        this.estadoInicial = estadoInicial;
+        this.estadosAceitacao = estadosAceitacao;
         this.tipo_automato = automato.getTipo_automato();
+    }
+
+    public String getEstadoInicial() {
+        return estadoInicial;
+    }
+
+    public void setEstadoInicial(String estadoInicial) {
+        this.estadoInicial = estadoInicial;
+    }
+
+    public Set<String> getEstadosAceitacao() {
+        return estadosAceitacao;
+    }
+
+    public void setEstadosAceitacao(Set<String> estadosAceitacao) {
+        this.estadosAceitacao = estadosAceitacao;
     }
 
     public Set<String> getEstados() {
@@ -63,28 +62,12 @@ public class AutomatoDto {
         this.alfabeto = alfabeto;
     }
 
-    public Map<String, Set<String>> getTransicoes() {
+    public Map<String, Map<Character, Set<String>>> getTransicoes() {
         return transicoes;
     }
 
-    public void setTransicoes(Map<String , Set<String>> transicoes) {
+    public void setTransicoes(Map<String, Map<Character, Set<String>>> transicoes) {
         this.transicoes = transicoes;
-    }
-
-    public String getEstado_inicial() {
-        return estado_inicial;
-    }
-
-    public void setEstado_inicial(String estado_inicial) {
-        this.estado_inicial = estado_inicial;
-    }
-
-    public Set<String> getEstados_aceitacao() {
-        return estados_aceitacao;
-    }
-
-    public void setEstados_aceitacao(Set<String> estados_aceitacao) {
-        this.estados_aceitacao = estados_aceitacao;
     }
 
     public Tipo getTipo_automato() {
@@ -95,11 +78,5 @@ public class AutomatoDto {
         this.tipo_automato = tipo_automato;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

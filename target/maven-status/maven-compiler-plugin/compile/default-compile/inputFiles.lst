@@ -1,6 +1,0 @@
-/home/yan/Documents/Exemplo-Back_End-Spring-Java/src/main/java/br/com/yan/automato/GeradorDeAutomatoApplication.java
-/home/yan/Documents/Exemplo-Back_End-Spring-Java/src/main/java/br/com/yan/automato/config/MyConfiguration.java
-/home/yan/Documents/Exemplo-Back_End-Spring-Java/src/main/java/br/com/yan/automato/controller/CarroController.java
-/home/yan/Documents/Exemplo-Back_End-Spring-Java/src/main/java/br/com/yan/automato/dto/CarroDto.java
-/home/yan/Documents/Exemplo-Back_End-Spring-Java/src/main/java/br/com/yan/automato/model/Carro.java
-/home/yan/Documents/Exemplo-Back_End-Spring-Java/src/main/java/br/com/yan/automato/repository/CarroRepository.java

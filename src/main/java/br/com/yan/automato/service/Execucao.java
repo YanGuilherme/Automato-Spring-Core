@@ -1,27 +1,17 @@
 package br.com.yan.automato.service;
 
-import br.com.yan.automato.model.Automato;
-
 public class Execucao {
 
-    private Automato automato;
+    private String automatoId;
 
     private String cadeia;
 
-    public Execucao() {
+    public String getAutomatoId() {
+        return automatoId;
     }
 
-    Execucao(Automato automato, String cadeia) {
-        this.automato = automato;
-        this.cadeia = cadeia;
-    }
-
-    public Automato getAutomato() {
-        return automato;
-    }
-
-    public void setAutomato(Automato automatoDto) {
-        this.automato = automatoDto;
+    public void setAutomatoId(String automatoId) {
+        this.automatoId = automatoId;
     }
 
     public String getCadeia() {
@@ -31,5 +21,4 @@ public class Execucao {
     public void setCadeia(String cadeia) {
         this.cadeia = cadeia;
     }
-
 }

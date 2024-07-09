@@ -1,14 +1,15 @@
 package br.com.yan.automato.service;
 
 import br.com.yan.automato.model.Automato;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeName("AFD")
 public class AutomatoDeterministico extends Automato {
-    private Map<String, Map<Character, String>> transicoes;
+    private Map<String, Map<Character, String>> transicoes = new HashMap<>();
 
     public AutomatoDeterministico(){
         super();
@@ -38,9 +39,18 @@ public class AutomatoDeterministico extends Automato {
     }
 
     @Override
+    public Set<Character> getAlfabeto() {
+        String estado = getEstados().stream().findAny().orElse("Q1");
+        return this.transicoes.get(estado).keySet();
+    }
+    @Override
     public boolean aceitaCadeia(String cadeia) {
         String estadoFinal = processarCadeia(cadeia);
         return estadosAceitacao.contains(estadoFinal);
     }
 
+    @Override
+    public Set<String> getEstados() {
+        return this.transicoes.keySet();
+    }
 }

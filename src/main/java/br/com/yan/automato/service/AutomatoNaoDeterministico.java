@@ -1,15 +1,20 @@
 package br.com.yan.automato.service;
 
 import br.com.yan.automato.model.Automato;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import org.springframework.data.annotation.Transient;
 
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeName("AFN")
 public class AutomatoNaoDeterministico extends Automato {
 
-    private Map<String, Map<Character, Set<String>>> transicoes;
+    @Transient
+    private final String ACEITA = "ACEITA";
+    @Transient
+    private final String REJEITA = "REJEITA";
+
+    private Map<String, Map<Character, Set<String>>> transicoes = new HashMap<>();
 
     public AutomatoNaoDeterministico() {
         super();
@@ -30,14 +35,23 @@ public class AutomatoNaoDeterministico extends Automato {
 
 
     @Override
+    public Set<String> getEstados() {
+        return this.transicoes.keySet();
+    }
+
+    @Override
     public boolean aceitaCadeia(String cadeia) {
-        String estadoFinal = processarCadeia(cadeia);
-        return estadosAceitacao.contains(estadoFinal);
+        return processarCadeia(cadeia).equals(ACEITA);
+    }
+
+    @Override
+    public Set<Character> getAlfabeto() {
+        String estado = getEstados().stream().findAny().orElse("Q1");
+        return this.transicoes.get(estado).keySet();
     }
 
     public String processarCadeia(String cadeia){
-        boolean aceita = simularAFN(cadeia, estadoInicial, 0);
-        return aceita ? "aceita" : "rejeita";
+        return simularAFN(cadeia, estadoInicial, 0) ? ACEITA : REJEITA;
     }
 
     public boolean simularAFN(String cadeia, String estadoAtual, int index) {
@@ -59,7 +73,6 @@ public class AutomatoNaoDeterministico extends Automato {
                 return true; // Aceita se encontrar um caminho válido
             }
         }
-
         return false; // Se nenhum caminho leva a uma aceitação
     }
 

@@ -1,18 +1,15 @@
 package br.com.yan.automato.controller;
 
 import br.com.yan.automato.model.Automato;
-import br.com.yan.automato.dto.AutomatoDto;
 import br.com.yan.automato.service.AutomatoService;
-
-
 import br.com.yan.automato.service.Execucao;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/automatos")
@@ -20,29 +17,39 @@ public class AutomatoController {
 
     @Autowired
     private AutomatoService automatoService;
-
-
-
-    @PostMapping("/create")
-    public ResponseEntity<Automato> criarAutomato(@RequestBody AutomatoDto automatoDto){
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
+    private static final Logger logger = LoggerFactory.getLogger(AutomatoService.class);
 
     @GetMapping("/findAll")
-    public ResponseEntity<List<Automato>> buscarTodosAutomatos(){
-        return new ResponseEntity<>(HttpStatus.OK);
+    public List<Automato> findAll() {
+        List<Automato> automatos = automatoService.findAll();
+        return automatos;
+    }
+
+    @PostMapping("/save")
+    public Automato create(@RequestBody Automato automato) {
+        return automatoService.save(automato);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(){
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public void delete(@PathVariable String id) {
+        automatoService.deleteById(id);
     }
+
+    @DeleteMapping("/deleteAll")
+    public ResponseEntity<String> deleteAll() {
+        automatoService.deleteAll();
+        return ResponseEntity.status(HttpStatus.OK).body("Todos os autômatos foram deletados com sucesso.");
+    }
+
 
     @PostMapping("/exec")
-    public ResponseEntity<String> percorrer(@RequestBody Execucao excecucao) {
-        Automato automato = excecucao.getAutomato();
-        return ResponseEntity.ok(automato.processarCadeia(excecucao.getCadeia()));
+    public ResponseEntity<Boolean> percorrer(@RequestBody Execucao excecucao) {
+        Automato automato = automatoService.findById(excecucao.getAutomatoId());
+        return ResponseEntity.ok(automato.aceitaCadeia(excecucao.getCadeia()));
     }
 
-
+    @GetMapping("/{id}")
+    public ResponseEntity<Automato> findById(@PathVariable String id) {
+        return ResponseEntity.ok(automatoService.findById(id));
+    }
 }

@@ -63,7 +63,7 @@ public class AutomatoNaoDeterministico extends Automato {
         final Character simbolo = cadeia.charAt(index);
         final Set<String> proximosEstados = transicoes.get(estadoAtual).get(simbolo);
 
-        if (proximosEstados.isEmpty()) {
+        if (Objects.isNull(proximosEstados) && proximosEstados.isEmpty()) {
             return false; // Não há transição para o símbolo atual
         }
 

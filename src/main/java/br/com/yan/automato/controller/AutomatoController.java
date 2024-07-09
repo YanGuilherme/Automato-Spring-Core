@@ -1,5 +1,6 @@
 package br.com.yan.automato.controller;
 
+import br.com.yan.automato.dto.ExecucaoDto;
 import br.com.yan.automato.model.Automato;
 import br.com.yan.automato.service.AutomatoService;
 import br.com.yan.automato.service.Execucao;
@@ -43,9 +44,11 @@ public class AutomatoController {
 
 
     @PostMapping("/exec")
-    public ResponseEntity<Boolean> percorrer(@RequestBody Execucao excecucao) {
+    public ResponseEntity<ExecucaoDto> percorrer(@RequestBody Execucao excecucao) {
         Automato automato = automatoService.findById(excecucao.getAutomatoId());
-        return ResponseEntity.ok(automato.aceitaCadeia(excecucao.getCadeia()));
+        ExecucaoDto execucaoDto = new ExecucaoDto(automato.aceitaCadeia((excecucao.getCadeia())));
+
+        return ResponseEntity.ok(execucaoDto);
     }
 
     @GetMapping("/{id}")

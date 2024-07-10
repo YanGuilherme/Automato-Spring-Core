@@ -4,6 +4,7 @@ import br.com.yan.automato.model.Automato;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +20,11 @@ public class AutomatoDeterministico extends Automato {
     public AutomatoDeterministico(String estadoInicial, Set<String> estadoAceitacao, Map<String, Map<Character, String>> transicoes) {
         super(estadoInicial, estadoAceitacao);
         this.transicoes = transicoes;
+    }
+
+    public AutomatoDeterministico(String estadoInicial, Set<String> estadosDeAceitacao) {
+        super(estadoInicial, estadosDeAceitacao);
+
     }
 
     public Map<String, Map<Character, String>> getTransicoes() {
@@ -52,5 +58,13 @@ public class AutomatoDeterministico extends Automato {
     @Override
     public Set<String> getEstados() {
         return this.transicoes.keySet();
+    }
+
+    public void adicionarTransicao(String estadoOrigem, char simbolo, String estadoDestino) {
+        if (!transicoes.containsKey(estadoOrigem)) {
+            transicoes.put(estadoOrigem, new HashMap<>());
+        }
+
+        transicoes.get(estadoOrigem).put(simbolo, estadoDestino);
     }
 }

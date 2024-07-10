@@ -1,9 +1,9 @@
 package br.com.yan.automato.controller;
 
+import br.com.yan.automato.dto.ConverterDTO;
 import br.com.yan.automato.dto.ExecucaoDto;
 import br.com.yan.automato.model.Automato;
-import br.com.yan.automato.service.AutomatoService;
-import br.com.yan.automato.service.Execucao;
+import br.com.yan.automato.service.*;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import java.util.List;
@@ -54,5 +54,13 @@ public class AutomatoController {
     @GetMapping("/{id}")
     public ResponseEntity<Automato> findById(@PathVariable String id) {
         return ResponseEntity.ok(automatoService.findById(id));
+    }
+
+    @PostMapping("/convertToAFD")
+    public ResponseEntity<AutomatoDeterministico> convertToAFD(@RequestBody ConverterDTO conversao) {
+
+        AutomatoDeterministico automato = automatoService.converterAFD(conversao.getId());
+        automatoService.save(automato);
+        return ResponseEntity.ok(automato);
     }
 }

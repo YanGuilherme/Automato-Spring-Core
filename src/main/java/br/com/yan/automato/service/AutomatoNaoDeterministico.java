@@ -33,7 +33,6 @@ public class AutomatoNaoDeterministico extends Automato {
         this.transicoes = transicoes;
     }
 
-
     @Override
     public Set<String> getEstados() {
         return this.transicoes.keySet();

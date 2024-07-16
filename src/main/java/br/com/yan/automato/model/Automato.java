@@ -1,4 +1,5 @@
 package br.com.yan.automato.model;
+import br.com.yan.automato.enums.RespostaExec;
 import br.com.yan.automato.service.AutomatoDeterministico;
 import br.com.yan.automato.service.AutomatoNaoDeterministico;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -45,8 +46,25 @@ public abstract class Automato {
         this.estadosAceitacao = automato.estadosAceitacao;
     }
 
+    public RespostaExec validarProcessar(String cadeia){
+        if(!cadeiaValida(cadeia)){
+            return RespostaExec.CADEIA_INVALIDA;
+        }
+        return testaCadeia(cadeia);
+    }
+
+    private boolean cadeiaValida(String cadeia) {
+        Set<Character> alfabeto = this.getAlfabeto();
+        for(Character caractere : cadeia.toCharArray()){
+            if (!alfabeto.contains(caractere)){
+                return false;
+            }
+        }
+        return true;
+    }
+
     abstract public Set<String> getEstados();
-    abstract public boolean aceitaCadeia(String cadeia);
+    abstract public RespostaExec testaCadeia(String cadeia);
     abstract public Set<Character> getAlfabeto();
     abstract public String processarCadeia(String cadeia);
 

@@ -46,8 +46,7 @@ public class AutomatoController {
     @PostMapping("/exec")
     public ResponseEntity<ExecucaoDto> percorrer(@RequestBody Execucao excecucao) {
         Automato automato = automatoService.findById(excecucao.getAutomatoId());
-        ExecucaoDto execucaoDto = new ExecucaoDto(automato.aceitaCadeia((excecucao.getCadeia())));
-
+        ExecucaoDto execucaoDto = new ExecucaoDto(automato.validarProcessar((excecucao.getCadeia())));
         return ResponseEntity.ok(execucaoDto);
     }
 

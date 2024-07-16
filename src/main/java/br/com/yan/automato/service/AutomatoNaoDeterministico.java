@@ -1,5 +1,6 @@
 package br.com.yan.automato.service;
 
+import br.com.yan.automato.enums.RespostaExec;
 import br.com.yan.automato.model.Automato;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.springframework.data.annotation.Transient;
@@ -39,8 +40,8 @@ public class AutomatoNaoDeterministico extends Automato {
     }
 
     @Override
-    public boolean aceitaCadeia(String cadeia) {
-        return processarCadeia(cadeia).equals(ACEITA);
+    public RespostaExec testaCadeia(String cadeia) {
+        return processarCadeia(cadeia).equals(ACEITA) ? RespostaExec.ACEITA : RespostaExec.REJEITA;
     }
 
     @Override
@@ -50,6 +51,7 @@ public class AutomatoNaoDeterministico extends Automato {
     }
 
     public String processarCadeia(String cadeia){
+
         return simularAFN(cadeia, estadoInicial, 0) ? ACEITA : REJEITA;
     }
 

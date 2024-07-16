@@ -1,5 +1,6 @@
 package br.com.yan.automato.service;
 
+import br.com.yan.automato.enums.RespostaExec;
 import br.com.yan.automato.model.Automato;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -59,9 +60,9 @@ public class AutomatoDeterministico extends Automato {
     }
 
     @Override
-    public boolean aceitaCadeia(String cadeia) {
+    public RespostaExec testaCadeia(String cadeia) {
         String estadoFinal = processarCadeia(cadeia);
-        return estadosAceitacao.contains(estadoFinal);
+        return estadosAceitacao.contains(estadoFinal) ? RespostaExec.ACEITA : RespostaExec.REJEITA;
     }
 
     public String processarCadeia(String cadeia) {

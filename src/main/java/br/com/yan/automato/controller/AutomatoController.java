@@ -63,4 +63,12 @@ public class AutomatoController {
         automatoService.save(automato);
         return ResponseEntity.ok(automato);
     }
+
+    @PostMapping("/minimizar")
+    public ResponseEntity<AutomatoDeterministico> minimizarAFD(@RequestBody ConverterDTO minimizacao){
+        AutomatoDeterministico automato = automatoService.minimizarAFD(minimizacao.getId());
+        automato.setMinimized(true);
+        automatoService.save(automato);
+        return ResponseEntity.ok(automato);
+    }
 }

@@ -26,6 +26,149 @@ public class AutomatoService {
         AutomatoNaoDeterministico afn = (AutomatoNaoDeterministico) automato;
         return converter(afn);
     }
+
+    public AutomatoDeterministico minimizarAFD(String id){
+        Automato automato = this.findById((id));
+        if(!(automato instanceof AutomatoDeterministico)){
+            throw new IllegalArgumentException("Automato não é do tipo AFD");
+        }
+        AutomatoDeterministico afd = (AutomatoDeterministico) automato;
+        return minimizacaoHopCroft(afd);
+    }
+
+    public AutomatoDeterministico minimizacaoHopCroft(AutomatoDeterministico afd) {
+        Set<String> estados = afd.getEstados();
+        Set<Character> alfabeto = afd.getAlfabeto();
+        String estadoInicial = afd.getEstadoInicial();
+        Set<String> estadosDeAceitacao = afd.getEstadosAceitacao();
+        Set<String> estadosNaoAceitacao = new HashSet<>(estados);
+        estadosNaoAceitacao.removeAll(estadosDeAceitacao);
+
+        Set<Set<String>> P = new HashSet<>();
+        P.add(estadosDeAceitacao);
+        P.add(estadosNaoAceitacao);
+
+        Set<Set<String>> W = new HashSet<>(P);
+
+        while (!W.isEmpty()) {
+            Set<String> A = W.iterator().next();
+            W.remove(A);
+
+            for (char c : alfabeto) {
+                Set<String> X = new HashSet<>();
+                for (String s : estados) {
+                    if (A.contains(afd.getTransicao(s, c))) {
+                        X.add(s);
+                    }
+                }
+
+                Set<Set<String>> P_new = new HashSet<>();
+                for (Set<String> Y : P) {
+                    Set<String> intersection = new HashSet<>(Y);
+                    intersection.retainAll(X);
+                    Set<String> difference = new HashSet<>(Y);
+                    difference.removeAll(X);
+
+                    if (!intersection.isEmpty() && !difference.isEmpty()) {
+                        P_new.add(intersection);
+                        P_new.add(difference);
+
+                        if (W.contains(Y)) {
+                            W.remove(Y);
+                            W.add(intersection);
+                            W.add(difference);
+                        } else {
+                            if (intersection.size() <= difference.size()) {
+                                W.add(intersection);
+                            } else {
+                                W.add(difference);
+                            }
+                        }
+                    } else {
+                        P_new.add(Y);
+                    }
+                }
+                P = P_new;
+            }
+        }
+
+        Map<Set<String>, String> representativos = new HashMap<>();
+        for (Set<String> grupo : P) {
+            String representativo = grupo.iterator().next();
+            representativos.put(grupo, representativo);
+        }
+
+        AutomatoDeterministico afd_minimizado = new AutomatoDeterministico(estadoInicial, new HashSet<>());
+        for (String estado : representativos.values()) {
+            afd_minimizado.getEstados().add(estado);
+            if (estadosDeAceitacao.contains(estado)) {
+                afd_minimizado.getEstadosAceitacao().add(estado);
+            }
+        }
+
+        for (Set<String> grupo : P) {
+            String representativo = representativos.get(grupo);
+            for (char c : alfabeto) {
+                String transicao = afd.getTransicao(grupo.iterator().next(), c);
+                if (transicao != null) {
+                    for (Set<String> destinoGrupo : P) {
+                        if (destinoGrupo.contains(transicao)) {
+                            String destinoRepresentativo = representativos.get(destinoGrupo);
+                            afd_minimizado.adicionarTransicao(representativo, c, destinoRepresentativo);
+                        }
+                    }
+                }
+            }
+        }
+
+        return afd_minimizado;
+    }
+
+    private AutomatoDeterministico removerEstadosInacessiveis(AutomatoDeterministico afd) {
+        Set<String> acessiveis = new HashSet<>();
+        Queue<String> fila = new LinkedList<>();
+
+        String estadoInicial = afd.getEstadoInicial();
+        Set<Character> alfabeto = afd.getAlfabeto();
+
+        // Adicionar o estado inicial à fila e ao conjunto de estados acessíveis
+        fila.offer(estadoInicial);
+        acessiveis.add(estadoInicial);
+
+        while (!fila.isEmpty()) {
+            String estadoAtual = fila.poll();
+
+            for (char simbolo : alfabeto) {
+                String proximoEstado = afd.getTransicao(estadoAtual, simbolo);
+                if (proximoEstado != null && !acessiveis.contains(proximoEstado)) {
+                    acessiveis.add(proximoEstado);
+                    fila.offer(proximoEstado);
+                }
+            }
+        }
+
+        // Criar um novo AFD com apenas os estados acessíveis
+        AutomatoDeterministico afdLimpo = new AutomatoDeterministico(estadoInicial, new HashSet<>());
+        for (String estado : acessiveis) {
+            afdLimpo.getEstados().add(estado);
+            if (afd.getEstadosAceitacao().contains(estado)) {
+                afdLimpo.getEstadosAceitacao().add(estado);
+            }
+        }
+
+        for (String estado : acessiveis) {
+            for (char simbolo : alfabeto) {
+                String proximoEstado = afd.getTransicao(estado, simbolo);
+                if (proximoEstado != null && acessiveis.contains(proximoEstado)) {
+                    afdLimpo.adicionarTransicao(estado, simbolo, proximoEstado);
+                }
+            }
+        }
+
+        return afdLimpo;
+    }
+
+
     private AutomatoDeterministico converter(AutomatoNaoDeterministico afn) {
         Set<String> estados = new HashSet<>();
         Set<Character> alfabeto = afn.getAlfabeto();
@@ -93,7 +236,7 @@ public class AutomatoService {
             }
         }
 
-
+        afd = removerEstadosInacessiveis(afd);
         return afd;
     }
 

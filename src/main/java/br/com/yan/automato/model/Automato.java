@@ -26,10 +26,12 @@ public abstract class Automato {
     private String id;
     protected String estadoInicial;
     protected Set<String> estadosAceitacao;
+    protected String nome;
 
 
 
-    public Automato(String estadoInicial, Set<String> estadosAceitacao) {
+    public Automato(String nome, String estadoInicial, Set<String> estadosAceitacao) {
+        this.nome = nome;
         this.id = UUID.randomUUID().toString();
         this.estadoInicial = estadoInicial;
         this.estadosAceitacao = estadosAceitacao;
@@ -68,6 +70,13 @@ public abstract class Automato {
     abstract public Set<Character> getAlfabeto();
     abstract public String processarCadeia(String cadeia);
 
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
     public String getId() {
         return id;

@@ -23,13 +23,13 @@ public class AutomatoDeterministico extends Automato {
         super();
     }
 
-    public AutomatoDeterministico(String estadoInicial, Set<String> estadosDeAceitacao) {
-        super(estadoInicial, estadosDeAceitacao);
+    public AutomatoDeterministico(String nome, String estadoInicial, Set<String> estadosDeAceitacao) {
+        super(nome, estadoInicial, estadosDeAceitacao);
         this.transicoes = new HashMap<>();
     }
 
-    public AutomatoDeterministico(String estadoInicial, Set<String> estadosDeAceitacao, Map<String, Map<Character, String>> transicoes) {
-        super(estadoInicial, estadosDeAceitacao);
+    public AutomatoDeterministico(String nome, String estadoInicial, Set<String> estadosDeAceitacao, Map<String, Map<Character, String>> transicoes) {
+        super(nome, estadoInicial, estadosDeAceitacao);
         this.transicoes = transicoes != null ? new HashMap<>(transicoes) : new HashMap<>();
     }
 
@@ -61,17 +61,30 @@ public class AutomatoDeterministico extends Automato {
 
     @Override
     public RespostaExec testaCadeia(String cadeia) {
-        String estadoFinal = processarCadeia(cadeia);
-        return estadosAceitacao.contains(estadoFinal) ? RespostaExec.ACEITA : RespostaExec.REJEITA;
+        try {
+            String estadoFinal = processarCadeia(cadeia);
+            return estadosAceitacao.contains(estadoFinal) ? RespostaExec.ACEITA : RespostaExec.REJEITA;
+        } catch (IllegalArgumentException e) {
+            return RespostaExec.REJEITA;
+        }
     }
 
     public String processarCadeia(String cadeia) {
         String estadoAtual = this.estadoInicial;
         for (char simbolo : cadeia.toCharArray()) {
-            estadoAtual = transicoes.get(estadoAtual).get(simbolo);
+            Map<Character, String> transicao = transicoes.get(estadoAtual);
+            if (transicao == null) {
+                throw new IllegalArgumentException("Estado " + estadoAtual + " não possui transições definidas.");
+            }
+            estadoAtual = transicao.get(simbolo);
+            if (estadoAtual == null) {
+                throw new IllegalArgumentException("Não há transição definida para o símbolo " + simbolo + " no estado " + estadoAtual + ".");
+            }
         }
         return estadoAtual;
     }
+
+
 
     public String getTransicao(String estado, char simbolo) {
         if (transicoes.containsKey(estado) && transicoes.get(estado).containsKey(simbolo)) {

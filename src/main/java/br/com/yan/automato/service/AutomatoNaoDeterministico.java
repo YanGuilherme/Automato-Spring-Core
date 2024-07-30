@@ -21,8 +21,8 @@ public class AutomatoNaoDeterministico extends Automato {
         super();
     }
 
-    public AutomatoNaoDeterministico(String estadoInicial, Set<String> estadosAceitacao, Map<String, Map<Character, Set<String>>> transicoes) {
-        super(estadoInicial, estadosAceitacao);
+    public AutomatoNaoDeterministico(String nome, String estadoInicial, Set<String> estadosAceitacao, Map<String, Map<Character, Set<String>>> transicoes) {
+        super(nome, estadoInicial, estadosAceitacao);
         this.transicoes = transicoes;
     }
 

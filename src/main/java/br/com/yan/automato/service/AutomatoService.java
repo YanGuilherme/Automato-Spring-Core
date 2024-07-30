@@ -27,6 +27,9 @@ public class AutomatoService {
         return converter(afn);
     }
 
+
+
+
     public AutomatoDeterministico minimizarAFD(String id){
         Automato automato = this.findById((id));
         if(!(automato instanceof AutomatoDeterministico)){
@@ -98,7 +101,7 @@ public class AutomatoService {
             representativos.put(grupo, representativo);
         }
 
-        AutomatoDeterministico afd_minimizado = new AutomatoDeterministico(estadoInicial, new HashSet<>());
+        AutomatoDeterministico afd_minimizado = new AutomatoDeterministico(afd.getNome()+" MINIMIZADO", estadoInicial, new HashSet<>());
         for (String estado : representativos.values()) {
             afd_minimizado.getEstados().add(estado);
             if (estadosDeAceitacao.contains(estado)) {
@@ -148,7 +151,7 @@ public class AutomatoService {
         }
 
         // Criar um novo AFD com apenas os estados acessíveis
-        AutomatoDeterministico afdLimpo = new AutomatoDeterministico(estadoInicial, new HashSet<>());
+        AutomatoDeterministico afdLimpo = new AutomatoDeterministico(afd.getNome(), estadoInicial, new HashSet<>());
         for (String estado : acessiveis) {
             afdLimpo.getEstados().add(estado);
             if (afd.getEstadosAceitacao().contains(estado)) {
@@ -175,7 +178,7 @@ public class AutomatoService {
         String estadoInicial = afn.getEstadoInicial();
         Set<String> estadosDeAceitacao = new HashSet<>();
 
-        AutomatoDeterministico afd = new AutomatoDeterministico(estadoInicial, estadosDeAceitacao);
+        AutomatoDeterministico afd = new AutomatoDeterministico(afn.getNome()+" CONVERTIDO", estadoInicial, estadosDeAceitacao);
 
         Map<Set<String>, String> novosEstados = new HashMap<>();
         Queue<Set<String>> fila = new LinkedList<>();

@@ -52,7 +52,6 @@ public class AutomatoController {
         return ResponseEntity.status(HttpStatus.OK).body("Todos os autômatos foram deletados com sucesso.");
     }
 
-
     @PostMapping("/exec")
     public ResponseEntity<ExecucaoDto> percorrer(@RequestBody Execucao excecucao) {
         Automato automato = automatoService.findById(excecucao.getAutomatoId());

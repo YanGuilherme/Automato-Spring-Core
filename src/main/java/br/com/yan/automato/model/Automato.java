@@ -2,12 +2,14 @@ package br.com.yan.automato.model;
 import br.com.yan.automato.enums.RespostaExec;
 import br.com.yan.automato.service.AutomatoDeterministico;
 import br.com.yan.automato.service.AutomatoNaoDeterministico;
+import br.com.yan.automato.service.Regex;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,7 +19,8 @@ import java.util.UUID;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = AutomatoDeterministico.class, name = "AFD"),
-        @JsonSubTypes.Type(value = AutomatoNaoDeterministico.class, name = "AFN")
+        @JsonSubTypes.Type(value = AutomatoNaoDeterministico.class, name = "AFN"),
+        @JsonSubTypes.Type(value = Regex.class, name = "AFN_RE")
 })
 @Document(collection = "automato")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -25,7 +28,7 @@ public abstract class Automato {
     @Id
     private String id;
     protected String estadoInicial;
-    protected Set<String> estadosAceitacao;
+    protected Set<String> estadosAceitacao = new HashSet<>();
     protected String nome;
 
 

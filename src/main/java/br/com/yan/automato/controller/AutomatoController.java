@@ -11,19 +11,25 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 import java.util.Set;
+import br.com.yan.automato.service.Regex;
 
 @RestController
 @RequestMapping("api/automatos")
 public class AutomatoController {
-
     private final AutomatoService automatoService;
     private final EquivalenciaService equivalenciaService;
     private static final Logger logger = LoggerFactory.getLogger(AutomatoService.class);
     private LinguagemValidator linguagemValidator;
+
+    @Autowired
+    private  Regex regex;
 
     public AutomatoController(AutomatoService automatoService, EquivalenciaService equivalenciaService) {
         this.automatoService = automatoService;
@@ -93,4 +99,12 @@ public class AutomatoController {
         List<TesteEquivalencia> equivalente = this.equivalenciaService.testarEquivalencia(automato1, automato2);
         return ResponseEntity.ok(equivalente);
     }
+
+    @PostMapping("regexToAfn")
+    public ResponseEntity<AutomatoNaoDeterministico> converterRegextoAfn(@RequestBody Map<String, String> payload) {
+        String expressao = payload.get("expressao");
+        AutomatoNaoDeterministico afnGerado = regex.gerarAFN(expressao);
+        return ResponseEntity.ok(afnGerado);
+    }
+
 }

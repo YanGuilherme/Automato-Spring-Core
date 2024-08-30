@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -48,8 +49,12 @@ public class AutomatoService {
         estadosNaoAceitacao.removeAll(estadosDeAceitacao);
 
         Set<Set<String>> P = new HashSet<>();
-        P.add(estadosDeAceitacao);
-        P.add(estadosNaoAceitacao);
+        if (!estadosDeAceitacao.isEmpty()) {
+            P.add(estadosDeAceitacao);
+        }
+        if (!estadosNaoAceitacao.isEmpty()) {
+            P.add(estadosNaoAceitacao);
+        }
 
         Set<Set<String>> W = new HashSet<>(P);
 
@@ -60,7 +65,8 @@ public class AutomatoService {
             for (char c : alfabeto) {
                 Set<String> X = new HashSet<>();
                 for (String s : estados) {
-                    if (A.contains(afd.getTransicao(s, c))) {
+                    String transicao = afd.getTransicao(s, c);
+                    if (transicao != null && A.contains(transicao)) {
                         X.add(s);
                     }
                 }
@@ -97,11 +103,20 @@ public class AutomatoService {
 
         Map<Set<String>, String> representativos = new HashMap<>();
         for (Set<String> grupo : P) {
-            String representativo = grupo.iterator().next();
-            representativos.put(grupo, representativo);
+            if (!grupo.isEmpty()) {
+                String representativo = grupo.iterator().next();
+                representativos.put(grupo, representativo);
+            }
         }
 
-        AutomatoDeterministico afd_minimizado = new AutomatoDeterministico(afd.getNome()+" MINIMIZADO", estadoInicial, new HashSet<>());
+        // Garantir que o estado inicial seja corretamente mapeado para o novo autômato
+        String novoEstadoInicial = representativos.entrySet().stream()
+                .filter(entry -> entry.getKey().contains(estadoInicial))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(estadoInicial); // Manter o estado inicial se não for encontrado
+
+        AutomatoDeterministico afd_minimizado = new AutomatoDeterministico(afd.getNome() + " MINIMIZADO", novoEstadoInicial, new HashSet<>());
         for (String estado : representativos.values()) {
             afd_minimizado.getEstados().add(estado);
             if (estadosDeAceitacao.contains(estado)) {
@@ -111,13 +126,17 @@ public class AutomatoService {
 
         for (Set<String> grupo : P) {
             String representativo = representativos.get(grupo);
-            for (char c : alfabeto) {
-                String transicao = afd.getTransicao(grupo.iterator().next(), c);
-                if (transicao != null) {
-                    for (Set<String> destinoGrupo : P) {
-                        if (destinoGrupo.contains(transicao)) {
-                            String destinoRepresentativo = representativos.get(destinoGrupo);
-                            afd_minimizado.adicionarTransicao(representativo, c, destinoRepresentativo);
+            if (representativo != null) {
+                for (char c : alfabeto) {
+                    String transicao = afd.getTransicao(grupo.iterator().next(), c);
+                    if (transicao != null) {
+                        for (Set<String> destinoGrupo : P) {
+                            if (destinoGrupo.contains(transicao)) {
+                                String destinoRepresentativo = representativos.get(destinoGrupo);
+                                if (destinoRepresentativo != null) {
+                                    afd_minimizado.adicionarTransicao(representativo, c, destinoRepresentativo);
+                                }
+                            }
                         }
                     }
                 }
@@ -126,6 +145,9 @@ public class AutomatoService {
 
         return afd_minimizado;
     }
+
+
+
 
     private AutomatoDeterministico removerEstadosInacessiveis(AutomatoDeterministico afd) {
         Set<String> acessiveis = new HashSet<>();
@@ -171,8 +193,63 @@ public class AutomatoService {
         return afdLimpo;
     }
 
+    private AutomatoNaoDeterministico removerVazios(AutomatoNaoDeterministico afn) {
+        // Criar um novo AFN sem transições vazias
+        AutomatoNaoDeterministico afnSemVazios = new AutomatoNaoDeterministico(afn.getNome(), afn.getEstadoInicial(), afn.getEstadosAceitacao());
+        afnSemVazios.setEstados(new HashSet<>(afn.getEstados()));
+        afnSemVazios.setAlfabeto(afn.getAlfabeto().stream().filter(simbolo -> simbolo != 'ε').collect(Collectors.toSet()));
+
+        // Processar cada estado do AFN
+        for (String estado : afn.getEstados()) {
+            Set<String> epsilonFecho = calcularFechoEpsilon(afn, estado);
+
+            for (String fecho : epsilonFecho) {
+                for (Character simbolo : afn.getAlfabeto()) {
+                    if (simbolo != 'ε') {
+                        Set<String> destinos = afn.getTransicoes().getOrDefault(fecho, new HashMap<>()).get(simbolo);
+                        if (destinos != null) {
+                            for (String destino : destinos) {
+                                afnSemVazios.adicionarTransicao(estado, simbolo, destino);
+                            }
+                        }
+                    }
+                }
+
+                if (afn.getEstadosAceitacao().contains(fecho)) {
+                    afnSemVazios.adicionarEstadoDeAceitacao(estado);
+                }
+            }
+        }
+
+        return afnSemVazios;
+    }
+
+    private Set<String> calcularFechoEpsilon(AutomatoNaoDeterministico afn, String estado) {
+        Set<String> fecho = new HashSet<>();
+        Stack<String> pilha = new Stack<>();
+        pilha.push(estado);
+        fecho.add(estado);
+
+        while (!pilha.isEmpty()) {
+            String atual = pilha.pop();
+            Set<String> destinosEpsilon = afn.getTransicoes().getOrDefault(atual, new HashMap<>()).get('ε');
+            if (destinosEpsilon != null) {
+                for (String destino : destinosEpsilon) {
+                    if (!fecho.contains(destino)) {
+                        fecho.add(destino);
+                        pilha.push(destino);
+                    }
+                }
+            }
+        }
+
+        return fecho;
+    }
+
+
 
     private AutomatoDeterministico converter(AutomatoNaoDeterministico afn) {
+        afn = removerVazios(afn);
         Set<String> estados = new HashSet<>();
         Set<Character> alfabeto = afn.getAlfabeto();
         String estadoInicial = afn.getEstadoInicial();
@@ -238,7 +315,6 @@ public class AutomatoService {
                 }
             }
         }
-
         afd = removerEstadosInacessiveis(afd);
         return afd;
     }

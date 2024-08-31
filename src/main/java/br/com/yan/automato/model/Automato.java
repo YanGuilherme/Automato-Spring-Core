@@ -20,7 +20,6 @@ import java.util.UUID;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = AutomatoDeterministico.class, name = "AFD"),
         @JsonSubTypes.Type(value = AutomatoNaoDeterministico.class, name = "AFN"),
-        @JsonSubTypes.Type(value = Regex.class, name = "AFN_RE")
 })
 @Document(collection = "automato")
 @JsonIgnoreProperties(ignoreUnknown = true)

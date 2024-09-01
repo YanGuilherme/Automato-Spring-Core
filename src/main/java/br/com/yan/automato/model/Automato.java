@@ -2,6 +2,7 @@ package br.com.yan.automato.model;
 import br.com.yan.automato.enums.RespostaExec;
 import br.com.yan.automato.service.AutomatoDeterministico;
 import br.com.yan.automato.service.AutomatoNaoDeterministico;
+import br.com.yan.automato.service.MaquinaDeTuring;
 import br.com.yan.automato.service.Regex;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = AutomatoDeterministico.class, name = "AFD"),
         @JsonSubTypes.Type(value = AutomatoNaoDeterministico.class, name = "AFN"),
+        @JsonSubTypes.Type(value = MaquinaDeTuring.class, name = "MT")
 })
 @Document(collection = "automato")
 @JsonIgnoreProperties(ignoreUnknown = true)

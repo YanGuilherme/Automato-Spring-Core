@@ -2,11 +2,7 @@ package br.com.yan.automato.controller;
 
 import br.com.yan.automato.dto.ExecucaoDto;
 import br.com.yan.automato.dto.TestarMaquinaDTO;
-import br.com.yan.automato.enums.RespostaExec;
-import br.com.yan.automato.model.Automato;
-import br.com.yan.automato.service.AutomatoService;
 import br.com.yan.automato.service.MaquinaDeTuring;
-import br.com.yan.automato.service.MaquinaDeTuringUniversal;
 import br.com.yan.automato.service.MaquinaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,17 +33,9 @@ public class MaquinaController {
         }
 
         // Criar uma instância de MaquinaDeTuringUniversal para simular a cadeia
-        MaquinaDeTuringUniversal maquinaUniversal = new MaquinaDeTuringUniversal();
-        maquinaUniversal.setId(maquinaDeTuring.getId());
-        maquinaUniversal.setEstadoInicial(maquinaDeTuring.getEstadoInicial());
-        maquinaUniversal.setEstadosAceitacao(maquinaDeTuring.getEstadosAceitacao());
-        maquinaUniversal.setNome(maquinaDeTuring.getNome());
-        maquinaUniversal.setX(maquinaDeTuring.getX());
-        maquinaUniversal.setY(maquinaDeTuring.getY());
-        maquinaUniversal.setAlfabetoFita(maquinaDeTuring.getAlfabetoFita());
-        maquinaUniversal.setTransicoes(maquinaDeTuring.getTransicoes());
 
-        ExecucaoDto execucaoDto = new ExecucaoDto(maquinaUniversal.validarProcessar((request.getCadeia())));
+
+        ExecucaoDto execucaoDto = new ExecucaoDto(maquinaDeTuring.validarProcessar((request.getCadeia())));
 
         // Testar a cadeia
         return ResponseEntity.ok(execucaoDto);

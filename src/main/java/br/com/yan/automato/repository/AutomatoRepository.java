@@ -11,5 +11,6 @@ import java.util.List;
 public interface AutomatoRepository extends MongoRepository<Automato, String> {
     @Query("{ '_class': { $in: ['br.com.yan.automato.service.AutomatoDeterministico', 'br.com.yan.automato.service.AutomatoNaoDeterministico'] } }")
     List<Automato> findAll();
+    List<Automato> findByUserId(String userId);
 }
 

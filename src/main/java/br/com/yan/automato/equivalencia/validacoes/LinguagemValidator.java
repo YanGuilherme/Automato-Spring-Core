@@ -1,6 +1,5 @@
 package br.com.yan.automato.equivalencia.validacoes;
 
-import br.com.yan.automato.enums.RespostaExec;
 import br.com.yan.automato.equivalencia.dto.TesteEquivalencia;
 import br.com.yan.automato.model.Automato;
 import br.com.yan.automato.service.AutomatoService;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Component
@@ -19,7 +17,7 @@ public class LinguagemValidator implements EquivalenceInterface{
     public Set<String> gerarLinguagem(String id1, String id2){
         Automato automato = automatoService.findById(id1);
         Set<Character> alfabeto = automato.getAlfabeto();
-        Integer comprimento = automato.getEstados().size();
+        int comprimento = automato.getEstados().size();
         Set<String> linguagem = new HashSet<>();
 
         gerarCombinacoes("", alfabeto, comprimento, linguagem);

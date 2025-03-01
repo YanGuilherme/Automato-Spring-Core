@@ -349,6 +349,11 @@ public class AutomatoService {
         repository.deleteById(id);
     }
 
+    public List<Automato> findByUserId(String id){
+        return repository.findByUserId(id);
+    }
+
+
     public Automato findById(String automatoId) {
         return repository.findById(automatoId).orElseThrow(
                 ()-> new NotFoundException(String.format("Automato com ID %s não encontrado.", automatoId))

@@ -6,6 +6,7 @@ import br.com.yan.automato.equivalencia.EquivalenciaService;
 import br.com.yan.automato.equivalencia.dto.TesteEquivalencia;
 import br.com.yan.automato.equivalencia.validacoes.LinguagemValidator;
 import br.com.yan.automato.model.Automato;
+import br.com.yan.automato.model.User;
 import br.com.yan.automato.service.*;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -29,7 +31,7 @@ public class AutomatoController {
     private LinguagemValidator linguagemValidator;
 
     @Autowired
-    private  Regex regex;
+    private Regex regex;
 
     public AutomatoController(AutomatoService automatoService, EquivalenciaService equivalenciaService) {
         this.automatoService = automatoService;
@@ -37,26 +39,30 @@ public class AutomatoController {
     }
 
     @GetMapping("/findAll")
-    public List<Automato> findAll() {
-        List<Automato> automatos = automatoService.findAll();
-        return automatos;
+    public List<Automato> findAll(@AuthenticationPrincipal User user) {
+            return automatoService.findByUserId(user.getId());
     }
 
     @PostMapping("/save")
-    public Automato create(@RequestBody Automato automato) {
-        return automatoService.save(automato);
+    public ResponseEntity<Automato> create(@RequestBody Automato automato, @AuthenticationPrincipal User user) {
+        automato.setUserId(user.getId());
+        Automato automatoSaved = automatoService.save(automato);
+        return ResponseEntity.ok(automatoSaved);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable String id) {
-        automatoService.deleteById(id);
+    public ResponseEntity delete(@PathVariable String id, @AuthenticationPrincipal User user) {
+
+        Automato automato = automatoService.findById(id);
+        if(automato.getUserId().equals(user.getId())){
+            automatoService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }else{
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
-    @DeleteMapping("/deleteAll")
-    public ResponseEntity<String> deleteAll() {
-        automatoService.deleteAll();
-        return ResponseEntity.status(HttpStatus.OK).body("Todos os autômatos foram deletados com sucesso.");
-    }
+    //Ajustar os endpoints daqui pra baixo
 
     @PostMapping("/exec")
     public ResponseEntity<ExecucaoDto> percorrer(@RequestBody Execucao excecucao) {
@@ -92,7 +98,7 @@ public class AutomatoController {
         return ResponseEntity.ok(linguagem);
     }
 
-        @GetMapping("testarEquivalencia/{id1}/{id2}")
+    @GetMapping("testarEquivalencia/{id1}/{id2}")
     public ResponseEntity<List<TesteEquivalencia>> testarEquivalencia(@PathVariable String id1, @PathVariable String id2) {
         Automato automato1 = automatoService.findById(id1);
         Automato automato2 = automatoService.findById(id2);

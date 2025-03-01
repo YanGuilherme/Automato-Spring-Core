@@ -3,12 +3,12 @@ import br.com.yan.automato.enums.RespostaExec;
 import br.com.yan.automato.service.AutomatoDeterministico;
 import br.com.yan.automato.service.AutomatoNaoDeterministico;
 import br.com.yan.automato.service.MaquinaDeTuring;
-import br.com.yan.automato.service.Regex;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,6 +32,8 @@ public abstract class Automato {
     protected Set<String> estadosAceitacao = new HashSet<>();
     protected String nome;
 
+    @Field("userId")  // Apenas o ID do usuário
+    private String userId;
 
 
     public Automato(String nome, String estadoInicial, Set<String> estadosAceitacao) {
@@ -73,6 +75,14 @@ public abstract class Automato {
     abstract public RespostaExec testaCadeia(String cadeia);
     abstract public Set<Character> getAlfabeto();
     abstract public String processarCadeia(String cadeia);
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getNome() {
         return nome;

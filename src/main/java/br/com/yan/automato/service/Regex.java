@@ -41,17 +41,16 @@ public class Regex {
     }
 
     private boolean isOperador(char c) {
-        return c == '*' || c == '|' || c == '.' || c == '+'; // Agora inclui o operador '+'
+        return c == '*' || c == '|' || c == '.' || c == '+';
     }
 
     private int precedencia(char operador) {
-        switch (operador) {
-            case '*': return 3;
-            case '.': return 2;
-            case '|':
-            case '+': return 1; // Trata '+' com a mesma precedência do '|'
-            default: return 0;
-        }
+        return switch (operador) {
+            case '*' -> 3;
+            case '.' -> 2;
+            case '|', '+' -> 1; // Trata '+' com a mesma precedência do '|'
+            default -> 0;
+        };
     }
 
 

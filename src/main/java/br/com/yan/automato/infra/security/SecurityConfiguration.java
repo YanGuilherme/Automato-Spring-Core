@@ -31,6 +31,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "api/automatos/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "api/automatos/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "api/automatos/deleteAll").hasAuthority("admin")
                         .requestMatchers(HttpMethod.DELETE, "api/automatos/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "api/maquina/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "api/maquina/**").authenticated()

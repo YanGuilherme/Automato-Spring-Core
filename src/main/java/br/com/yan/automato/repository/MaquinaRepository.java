@@ -8,4 +8,5 @@ import java.util.List;
 
 @Repository
 public interface MaquinaRepository extends MongoRepository<MaquinaDeTuring, String> {
+    List<MaquinaDeTuring> findByUserId(String userId);
 }

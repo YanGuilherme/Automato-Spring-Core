@@ -2,6 +2,7 @@ package br.com.yan.automato.controller;
 
 import br.com.yan.automato.dto.ConverterDTO;
 import br.com.yan.automato.dto.ExecucaoDto;
+import br.com.yan.automato.enums.UserRole;
 import br.com.yan.automato.equivalencia.EquivalenciaService;
 import br.com.yan.automato.equivalencia.dto.TesteEquivalencia;
 import br.com.yan.automato.equivalencia.validacoes.LinguagemValidator;
@@ -62,55 +63,89 @@ public class AutomatoController {
         }
     }
 
-    //Ajustar os endpoints daqui pra baixo
+
+    //endpoint nao funciona kkkkkkkkkkkk
+    @DeleteMapping("/deleteAll")
+    public ResponseEntity deleteAll(@AuthenticationPrincipal User user){
+        System.out.println(user.getUserRole());
+        if(user.getUserRole().equals(UserRole.ADMIN)){
+            automatoService.deleteAll();
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
 
     @PostMapping("/exec")
-    public ResponseEntity<ExecucaoDto> percorrer(@RequestBody Execucao excecucao) {
+    public ResponseEntity<ExecucaoDto> percorrer(@RequestBody Execucao excecucao, @AuthenticationPrincipal User user) {
         Automato automato = automatoService.findById(excecucao.getAutomatoId());
-        ExecucaoDto execucaoDto = new ExecucaoDto(automato.validarProcessar((excecucao.getCadeia())));
-        return ResponseEntity.ok(execucaoDto);
+        if(automato.getUserId().equals(user.getId())){
+            ExecucaoDto execucaoDto = new ExecucaoDto(automato.validarProcessar((excecucao.getCadeia())));
+            return ResponseEntity.ok(execucaoDto);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Automato> findById(@PathVariable String id) {
-        return ResponseEntity.ok(automatoService.findById(id));
+    public ResponseEntity<Automato> findById(@PathVariable String id, @AuthenticationPrincipal User user) {
+        Automato automato = automatoService.findById(id);
+        if(automato.getUserId().equals(user.getId())){
+            return ResponseEntity.ok(automato);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @PostMapping("/convertToAFD")
-    public ResponseEntity<AutomatoDeterministico> convertToAFD(@RequestBody ConverterDTO conversao) {
+    //Ajustar os endpoints daqui pra baixo
 
-        AutomatoDeterministico automato = automatoService.converterAFD(conversao.getId());
-        automatoService.save(automato);
-        return ResponseEntity.ok(automato);
+
+    @PostMapping("/convertToAFD")
+    public ResponseEntity<AutomatoDeterministico> convertToAFD(@RequestBody ConverterDTO conversao, @AuthenticationPrincipal User user) {
+        Automato automato = automatoService.findById(conversao.getId());
+        if(automato.getUserId().equals(user.getId())){
+            AutomatoDeterministico automatoDeterministico = automatoService.converterAFD(automato);
+            automatoDeterministico.setUserId(user.getId());
+            automatoService.save(automatoDeterministico);
+            return ResponseEntity.ok(automatoDeterministico);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
     }
 
     @PostMapping("/minimizar")
-    public ResponseEntity<AutomatoDeterministico> minimizarAFD(@RequestBody ConverterDTO minimizacao){
-        AutomatoDeterministico automato = automatoService.minimizarAFD(minimizacao.getId());
-        automato.setMinimized(true);
-        automatoService.save(automato);
-        return ResponseEntity.ok(automato);
+    public ResponseEntity<AutomatoDeterministico> minimizarAFD(@RequestBody ConverterDTO minimizacao, @AuthenticationPrincipal User user){
+        Automato automato = automatoService.findById(minimizacao.getId());
+        if(automato.getUserId().equals(user.getId())){
+            AutomatoDeterministico automatoDeterministico = automatoService.minimizarAFD(automato);
+            automatoDeterministico.setMinimized(true);
+            automatoDeterministico.setUserId(user.getId());
+            automatoService.save(automatoDeterministico);
+            return ResponseEntity.ok(automatoDeterministico);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @PostMapping("gerarLinguagem/{id1}/{id2}")
-    public ResponseEntity<Set<String>> gerarLinguagem(@PathVariable String id1, @PathVariable String id2) {
-        Set<String> linguagem = linguagemValidator.gerarLinguagem(id1,id2);
-        return ResponseEntity.ok(linguagem);
-    }
 
     @GetMapping("testarEquivalencia/{id1}/{id2}")
-    public ResponseEntity<List<TesteEquivalencia>> testarEquivalencia(@PathVariable String id1, @PathVariable String id2) {
+    public ResponseEntity<List<TesteEquivalencia>> testarEquivalencia(@PathVariable String id1, @PathVariable String id2,  @AuthenticationPrincipal User user) {
         Automato automato1 = automatoService.findById(id1);
         Automato automato2 = automatoService.findById(id2);
-        List<TesteEquivalencia> equivalente = this.equivalenciaService.testarEquivalencia(automato1, automato2);
-        return ResponseEntity.ok(equivalente);
+        if(automato1.getUserId().equals(user.getId()) && automato2.getUserId().equals(user.getId())){
+            List<TesteEquivalencia> equivalente = this.equivalenciaService.testarEquivalencia(automato1, automato2);
+            return ResponseEntity.ok(equivalente);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PostMapping("regexToAfn")
-    public ResponseEntity<AutomatoNaoDeterministico> converterRegextoAfn(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<AutomatoNaoDeterministico> converterRegextoAfn(@RequestBody Map<String, String> payload, @AuthenticationPrincipal User user) {
         String expressao = payload.get("expressao");
         AutomatoNaoDeterministico afnGerado = regex.gerarAFN(expressao);
+        afnGerado.setUserId(user.getId());
+        automatoService.save(afnGerado);
         return ResponseEntity.ok(afnGerado);
     }
+
+    //parece que todos os endpoints esta ok, menos o de deleteAll
 
 }

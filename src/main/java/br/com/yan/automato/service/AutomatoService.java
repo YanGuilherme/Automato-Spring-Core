@@ -19,8 +19,7 @@ public class AutomatoService {
 
 
 
-    public AutomatoDeterministico converterAFD(String id){
-        Automato automato = this.findById(id);
+    public AutomatoDeterministico converterAFD(Automato automato){
         if(!(automato instanceof AutomatoNaoDeterministico)){
             throw new IllegalArgumentException("Automato não é do tipo AFN");
         }
@@ -31,8 +30,7 @@ public class AutomatoService {
 
 
 
-    public AutomatoDeterministico minimizarAFD(String id){
-        Automato automato = this.findById((id));
+    public AutomatoDeterministico minimizarAFD(Automato automato){
         if(!(automato instanceof AutomatoDeterministico)){
             throw new IllegalArgumentException("Automato não é do tipo AFD");
         }

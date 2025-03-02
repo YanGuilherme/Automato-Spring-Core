@@ -16,6 +16,7 @@ public class MaquinaService {
     public List<MaquinaDeTuring> findAll(){
         return maquinaRepository.findAll();
     }
+    public List<MaquinaDeTuring> findByUserId(String userId) {return maquinaRepository.findByUserId(userId);}
 
     public MaquinaDeTuring save(MaquinaDeTuring maquinaDeTuring){
         return maquinaRepository.save(maquinaDeTuring);

@@ -14,7 +14,7 @@ public class LinguagemValidator implements EquivalenceInterface{
     @Autowired
     AutomatoService automatoService;
 
-    public Set<String> gerarLinguagem(String id1, String id2){
+    public Set<String> gerarLinguagem(String id1){
         Automato automato = automatoService.findById(id1);
         Set<Character> alfabeto = automato.getAlfabeto();
         int comprimento = automato.getEstados().size();
@@ -23,9 +23,6 @@ public class LinguagemValidator implements EquivalenceInterface{
         gerarCombinacoes("", alfabeto, comprimento, linguagem);
 
         return linguagem;
-
-
-
     }
 
     private void gerarCombinacoes(String prefixo, Set<Character> alfabeto, int comprimento, Set<String> linguagem) {
@@ -40,7 +37,7 @@ public class LinguagemValidator implements EquivalenceInterface{
     }
     @Override
     public TesteEquivalencia validate(Automato automato1, Automato automato2) {
-        Set<String> linguagem = gerarLinguagem(automato1.getId(), automato2.getId());
+        Set<String> linguagem = gerarLinguagem(automato1.getId());
         for(String cadeia: linguagem){
             if(!automato1.validarProcessar(cadeia).equals(automato2.validarProcessar(cadeia))){
                 return new TesteEquivalencia(false, "Falhou na cadeia: " + cadeia, "Reconhecem mesma linguagem?");

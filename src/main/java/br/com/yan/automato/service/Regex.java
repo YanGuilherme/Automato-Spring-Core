@@ -102,7 +102,6 @@ public class Regex {
 
         AutomatoNaoDeterministico resultado = afnStack.pop();
         resultado.setAlfabeto(alfabeto);
-        automatoService.save(resultado);
         return resultado;
     }
 

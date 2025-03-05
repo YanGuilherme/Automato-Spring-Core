@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/auth")
@@ -48,6 +49,7 @@ public class AuthenticationController {
         String encryptedEncode = new BCryptPasswordEncoder().encode(data.senha());
         User user = new User(data.nome(), data.email(), encryptedEncode, data.instituicao(), UserRole.USER);
         userService.create(user);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .body(Collections.singletonMap("message", "Usuário criado com sucesso"));
     }
 }
